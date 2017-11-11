@@ -1,0 +1,392 @@
+<?php
+
+/**
+ * @file
+ * tickets.module
+ */
+
+/**
+ * Implements hook_user_login().
+ */
+function finance_user_login(&$edit, $account) {
+
+    $temp = $GLOBALS['user']->roles;
+    foreach ($temp as $role) {
+        //drupal_set_message($role);
+        $user_role = $role;
+    }
+
+    if ($user_role == 'administrator') {
+      //  $_GET['destination'] = 'project/select';
+    }
+}
+
+/**
+ * Implements hook_init().
+ */
+function finance_init() {
+    global $user;
+    global $role;
+    //session_start();
+
+    foreach ($user->roles as $role) {
+        
+    }
+    $_SESSION["uid"] = $user->uid;
+    $_SESSION["role"] = $role;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function finance_menu() {
+    //$items['examples/form-example'] = array( //this creates a URL that will call this form at "examples/form-example"
+    $items['ticket/new-ticket'] = array(//this creates a URL that will call this form at "examples/form-example"  
+      //'title' => 'Tickets', //page title
+      'description' => 'A form to create tickets.',
+      'page callback' => 'drupal_get_form', //this is the function that will be called when the page is accessed.  for a form, use drupal_get_form
+      'page arguments' => array('tickets_form', 1), //put the name of the form here
+      // 'access arguments' => array('access administration pages'),
+      'access callback' => TRUE,
+    );
+
+    $items['ticket/view/%node'] = array(
+      //'title' => 'Tickets', //page title
+      'description' => 'Page to  display selected ticket.',
+      'page callback' => 'tickets_view', //this is the function that will be called when the page is accessed.  for a form, use drupal_get_form
+      'page arguments' => array(2), //put the name of the form here
+      // 'access arguments' => array('access administration pages'),
+      //'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+    );
+
+    return $items;
+}
+
+/**
+ *   Implements hook_form().
+ */
+function finance_form($form, &$form_state, $arg) {
+
+    $role = $GLOBALS['role'];
+    if ($role == 'anonymous user') {
+        $url = '../user/login';
+        drupal_goto($url, array('external' => TRUE));
+    }
+
+    $user_name = $GLOBALS['user']->name;
+    drupal_set_message('username : - ' . $user_name);
+
+
+
+    //drupal_set_message("form:- " . arg(3));
+    //drupal_set_message('ticket form :- '.arg(2));
+    //To edit previously created ticket
+    //if(is_numeric($arg1))
+    //$nid = arg()
+
+    if (is_numeric(arg(3))) {
+        $nid = arg(3);
+        $_SESSION['nid'] = $nid;
+    }
+    else if (isset($_SESSION['nid'])) {
+        $nid = $_SESSION['nid'];
+    }
+
+    
+    //TO create a new ticket
+        if ($project_id == '') {
+            drupal_get_messages('error');
+            $url = '../project/select';
+            drupal_goto($url, array('external' => TRUE));
+        }
+
+        $query = "select name,project from project_users where pid = " . "'" . $project_id . "'";
+        //drupal_set_message($q);
+        $result = db_query($query);
+
+        foreach ($result as $value) {
+            $reporter[$value->name] = $value->name;
+            //  drupal_set_message($value->name);
+            $assignee[$value->name] = $value->name;
+            //drupal_set_message
+        }
+
+        //drupal_set_message($project_name);
+
+        $div = '<div id="tickets-form" class = "col-md-12" >';
+        $form['div_start'] = [
+          '#markup' => $div,
+        ];
+
+        $form['project'] = array(
+          '#type' => 'textfield',
+          '#name' => 'project',
+          '#title' => 'Project',
+          '#value' => $project_name,
+          '#weight' => 1,
+          '#required' => TRUE,
+          '#attributes' => array('readonly' => 'readonly'),
+        );
+
+        $issue_type = array("Bug" => "Bug", "Issue" => "Issue", "Ticket" => "Ticket");
+
+        $form['issue_type'] = array(
+          '#type' => 'select',
+          '#name' => 'issue_type',
+          '#title' => 'Issue Type',
+          '#options' => $issue_type,
+          '#weight' => 2,
+          '#required' => TRUE,
+        );
+
+        $form['ticket_summary'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Summary'),
+          //'#value' => $Reporter, 
+          '#weight' => 3,
+          '#required' => TRUE,
+        );
+
+        $form['reporter'] = array(
+          '#type' => 'select',
+          '#title' => t('Reporter'),
+          '#options' => $reporter,
+          '#weight' => 4,
+          '#multiple' => FALSE,
+          '#required' => TRUE,
+        );
+
+        $form['ticket_description'] = array(
+          '#type' => 'textarea',
+          '#title' => t('Description'),
+          '#weight' => 5,
+          '#required' => FALSE,
+        );
+
+        $priority = array("Low" => "Low", "Medium" => "Medium", "High" => "High");
+        $form['priority'] = array(
+          '#type' => 'select',
+          '#title' => 'Priority',
+          '#options' => $priority,
+          '#weight' => 6,
+          '#multiple' => $multiple = FALSE,
+          '#required' => $required = TRUE,
+        );
+        /*
+          $form['attachment'] = array(
+          '#title' => t('Upload file'),
+          '#type' => 'managed_file',
+          '#upload_validators' => array('file_validate_extensions' => array('jpeg jpg png gif zip txt doc docx xls xlsx pdf')),
+          '#weight' => 7,
+          '#upload_location' => 'public://files//' . 'tickets',
+          );
+         */
+
+        $form['assignee'] = array(
+          '#type' => 'select',
+          '#title' => t('Assignee'),
+          '#options' => $assignee,
+          '#weight' => 9,
+          '#required' => TRUE,
+        );
+
+        $form['submit'] = array(
+          '#type' => 'submit',
+          '#value' => 'Create',
+          '#weight' => 10,
+        );
+   
+
+    $form['upload'] = [
+      '#markup' => '<br/><br/><b>Upload Attachment:</b>',
+      '#weight' => 8,
+    ];
+
+    //print_r($form);
+    //drupal_set_message($form);
+
+    $form['attachment'] = array(
+      '#title' => t(''),
+      '#type' => 'managed_file',
+      '#upload_validators' => array('file_validate_extensions' => array('jpeg jpg png gif zip txt doc docx xls xlsx pdf')),
+      //'#weight' => 8,
+      '#upload_location' => 'public://files//' . 'finance',
+      '#suffix' => '</div>',
+    );
+
+    return $form;
+}
+
+function finance_form_submit($form, &$form_state) {
+    //drupal_set_message('inside submit');
+
+    if (arg(1) == 'new-ticket') {
+        drupal_set_message("Form has been submitted");
+        global $user;
+        $node = new stdClass();
+        $node->type = 'ticket'; //machine name of created content type.
+        //$node->title = $form_state['values']['name'];
+        $node->promote = 0;
+        $node->language = 'und';
+        $node->status = 0;
+        $node->uid = $user->uid;
+        node_save($node);
+
+        if (($form_state['values']['attachment']) !== 0) {
+            $file = file_load($form_state['values']['attachment']);
+            $file->status = FILE_STATUS_PERMANENT;
+            file_save($file);
+            $fid = $form_state['values']['attachment'];
+            drupal_set_message('file id : - ' . $fid);
+
+            $uri = $file->uri;
+            drupal_Set_message('uri :- ' . $uri);
+            $url = file_create_url($file->uri);
+            drupal_set_message('url : - ' . $url);
+
+            /*
+             *   Inserting file path in database
+             */
+
+            db_update('tickets')
+                ->fields(array(
+                  'attachment' => $uri,
+                ))
+                ->condition('nid', $node->nid)
+                ->execute();
+        }
+    }
+    //For updating file path of exisiting ticket
+    $uri = '';
+    $nid = arg(3);
+    drupal_set_message("nid:-" . $nid);
+    drupal_set_message("arg(4):=" . arg(4));
+    if ($uri == "") {
+        $result = db_query("SELECT attachment from {tickets} WHERE nid='" . $nid . "'");
+
+        foreach ($result as $value) {
+            $uri = $value->attachment;
+        }
+    }
+
+    if (arg(4) == 'edit') {
+        //$node_id = arg(3);
+        if (($form_state['values']['attachment']) !== 0) {
+            $file = file_load($form_state['values']['attachment']);
+            $file->status = FILE_STATUS_PERMANENT;
+            file_save($file);
+            $fid = $form_state['values']['attachment'];
+            drupal_set_message('file id : - ' . $fid);
+
+            $uri = $file->uri;
+            drupal_Set_message('uri :- ' . $uri);
+            $url = file_create_url($file->uri);
+            drupal_set_message('url : - ' . $url);
+
+            /*
+             *   Inserting file path into database
+             */
+
+            db_update('tickets')
+                ->fields(array(
+                  'attachment' => $uri,
+                ))
+                ->condition('nid', $nid)
+                ->execute();
+        }
+
+        /*
+         * Updating status and ticket information in database
+         */
+
+        db_update('tickets')
+            ->fields(array(
+              'status' => 0,
+            ))
+            ->condition('nid', $nid)
+            ->execute();
+
+        $get_pid = db_query("SELECT pid FROM project WHERE project ='" . $_POST['project'] . "'");
+        foreach ($get_pid as $value) {
+            $pid = $value->pid;
+        }
+
+        db_insert('tickets')
+            ->fields(array(
+              'nid' => $nid,
+              'pid' => $pid,
+              'project' => $_POST['project'],
+              'ticket_status' => $_POST['status_show'],
+              'issue_type' => $_POST['issue_type'],
+              'summary' => $_POST['ticket_summary'],
+              'reporter' => $_POST['reporter'],
+              'description' => $_POST['ticket_description'],
+              'priority' => $_POST['priority'],
+              'assignee' => $_POST['assignee'],
+              'attachment' => $uri,
+              'status' => 1,
+            ))
+            ->execute();
+
+        drupal_set_message(t('Ticket has been updated...!'));
+
+        $url = '../' . '?page=' . arg(5);
+        drupal_goto($url, array('external' => TRUE));
+    }
+
+    $url = 'assigned/view-all' . '?page=1';
+    drupal_goto($url, array('external' => TRUE));
+}
+
+function finance_form_validate($form, &$form_state) {
+    //drupal_set_message('inside validate');
+    // drupal_set_message($_POST['reporter']);
+    // drupal_set_message($_POST['assignee']);
+    // if ($_POST['reporter'] == '-Select-' || $_POST['assignee'] == "-Select-") {
+    //     form_set_error('hi', 'Reporter and Assignee cannot be same!');
+    // }
+}
+
+/*
+ *  Implements hook_node_insert
+ */
+
+function finance_node_insert($node) {
+    drupal_set_message($node->nid);
+  //  drupal_set_message($_POST['project']);
+   // drupal_set_message($_POST['priority']);
+  //  drupal_set_message($_POST['issue_type']);
+
+    /*
+    // For inserting ticket data into database
+    if (arg(1) == 'new-ticket') {
+       
+         // Inserting data into database
+         
+
+        $get_pid = db_query("SELECT pid FROM project WHERE project ='" . $_POST['project'] . "'");
+        foreach ($get_pid as $value) {
+            $pid = $value->pid;
+        }
+        db_insert('tickets')
+            ->fields(array(
+              'nid' => $node->nid,
+              'pid' => $pid,
+              'project' => $_POST['project'],
+              'ticket_status' => '<span style="color:white; background-color:#4A6785;">TO DO</span>',
+              'issue_type' => $_POST['issue_type'],
+              'summary' => $_POST['ticket_summary'],
+              'reporter' => $_POST['reporter'],
+              'description' => $_POST['ticket_description'],
+              'priority' => $_POST['priority'],
+              'assignee' => $_POST['assignee'],
+              'status' => 1,
+            ))
+            ->execute();
+
+        drupal_set_message(t('Ticket has been created...!'));
+    }
+    return $node;
+    */
+}

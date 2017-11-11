@@ -1,0 +1,52 @@
+<?php
+if ($page['sidebar_first'] && $page['sidebar_second']) {
+    $cs1 = 0;
+    $cs2 = 0;
+    $cc = 12;
+    /*
+      $cs1 = 2;
+      $cs2 = 2;
+      $cc = 8;
+     */
+}
+
+
+if ($page['sidebar_first'] && !$page['sidebar_second']) {
+    /* $cs1 = 2;
+      $cs2 = 0;
+      $cc = 10;
+     */
+    $cs1 = 0;
+    $cs2 = 0;
+    $cc = 12;
+}
+
+if (!$page['sidebar_first'] && $page['sidebar_second']) {
+    /* $cs1 = 0;
+      $cs2 = 2;
+      $cc = 10; */
+    $cs1 = 0;
+    $cs2 = 0;
+    $cc = 12;
+}
+if (!$page['sidebar_first'] && !$page['sidebar_second']) {
+    /* $cs1 = 0;
+      $cs2 = 0;
+      $cc = 12; */
+    $cs1 = 0;
+    $cs2 = 0;
+    $cc = 12;
+}
+?>
+
+            <?php if ($page['sidebar_first']): ?>
+            <div id="main" role="main" class="col-md-3<?PHP echo $cs1; ?> ">
+            <?php print render($page['sidebar_first']); ?>
+            </div>  <!-- /#sidebar-first -->
+<?php endif; ?>
+           
+<?php if ($page['sidebar_second']): ?>
+        <div id="main" role="main" class="col-md-3<?PHP echo $cs1; ?>">
+        <?php print render($page['sidebar_second']); ?>
+        </div>  <!-- /#sidebar-second -->
+<?php endif; ?>

@@ -1,0 +1,19 @@
+#auth_box{
+    //display: none;
+    width: 400px;
+    //min-width: 400px;
+    margin: auto;
+    padding: 40px 0 0;
+    //padding: 40px 0 0;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+h1.title{
+    margin: auto;
+    text-align: center;
+    //padding: 0 0 15px;
+    font-size: 2em;
+    //padding-left: 465px;
+    //padding-bottom:0px;   
+}

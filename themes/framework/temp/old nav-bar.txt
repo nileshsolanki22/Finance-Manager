@@ -1,0 +1,123 @@
+scripts[] = js/sidebar.js
+scripts[] = js/jquery.min.js
+
+<!-- Static navbar -->
+
+<?PHP if ($user->uid): ?>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="<?PHP echo url("/"); ?>" alt="bars" >
+                        <span class="fa fa-bars fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <!--<li class="active">-->
+                <li>
+                    <a href="<?PHP echo url("project/select-project"); ?>" alt="home">
+                        <span class="fa fa-home fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li>
+                    <a href="<?PHP echo url("ticket/view-all"); ?>" alt="dashboard" title="View and manage your dashboards">
+                        <span class="fa fa-tachometer fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li>
+                    <a href="<?PHP echo url("project/new-project"); ?>" alt="projects" title="View recent projects and browse a list of projects">
+                        <span class="fa fa-cubes fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li>
+                    <a href="<?PHP echo url("project/add-users"); ?>" alt="create" title="Create a new issue / bug / etc">
+                        <span class="fa fa-plus fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li>
+                    <a href="<?PHP echo url("/"); ?>" alt="search" >
+                        <span class="fa fa-search fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?php if ($user->uid): ?> 
+                <li>
+                    <a href="<?PHP echo url("project/select"); ?>" alt="account" title="User account" class="active">
+                        <span class="fa fa-user fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li >
+                    <!-- module_load_include('pages.inc', 'user');
+user_logout();-->
+                    <a href="<?PHP echo url("user/logout") ?>" alt="logout" title="Logout">
+                        <span class="fa fa-sign-out fa-2x"></span>
+                    </a>
+                </li>
+            <?PHP endif; ?>
+            <?PHP if ($user->uid): ?>
+                <li class="fa fa-sort-desc fa-lg"><span >
+                    <form  action="<?php $_SERVER['PHP_SELF']; ?>" method = "POST">
+                    <select name = "project"  onchange="this.form.submit();"> <?php  echo get_projects($_SESSION['project']); ?>
+                    </select></form>
+                </li></span>
+            <?PHP endif; ?>                
+        </ul>
+
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container" >
+      
+    <div class="row" >
+        <?php print render($page['header']); ?>
+        <?php
+// if ($breadcrumb): print $breadcrumb; endif;
+        ?>
+
+        <?php if ($page['sidebar_first']): ?>
+            <div id="main" role="main" class="col-md-<?PHP echo $cs1; ?> ">
+                <?php print render($page['sidebar_first']); ?>
+            </div>  <!-- /#sidebar-first -->
+        <?php endif; ?>
+
+        <div id="main" role="main" class="col-md-<?PHP echo $cc; ?>">
+            <?php print $messages; ?>
+            <a id="main-content"></a>
+            <?php if ($page['highlighted']): ?><div id="highlighted"><?php print render($page['highlighted']); ?></div><?php endif; ?>
+            <?php print render($title_prefix); ?>
+
+
+            <?php if ($title): ?><h1 class="title" id="page-title"><?php print $title; ?></h1><?php endif; ?>
+
+
+            <?php print render($title_suffix); ?>
+            <?php if (!empty($tabs['#primary'])): ?><div class="tabs-wrapper clearfix"><?php print render($tabs); ?></div><?php endif; ?>
+            <?php print render($page['help']); ?>
+            <?php if ($action_links): ?><ul class="action-links"><?php print render($action_links); ?></ul><?php endif; ?>
+            <?php print render($page['content']); ?>
+        </div> <!-- /#main -->
+
+
+        <?php if ($page['sidebar_second']): ?>
+            <div id="main" role="main" class="col-md-<?PHP echo $cs1; ?>">
+                <?php print render($page['sidebar_second']); ?>
+            </div>  <!-- /#sidebar-second -->
+        <?php endif; ?>
+
+
+    </div> <!-- /#row -->
+    
+</div> <!-- /#container -->

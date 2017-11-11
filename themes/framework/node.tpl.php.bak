@@ -1,0 +1,51 @@
+<?php if (!$page): ?>
+
+<div class="col-xs-6 col-md-3">
+    <a class="thumbnail" href="#">
+      <img alt="..." src="http://img.youtube.com/vi/<?PHP echo $node->field_video['und'][0]['value']; ?>/0.jpg">
+    </a>
+      <div class="caption">
+      <h2<?php print $title_attributes; ?>><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
+      <?php if ($display_submitted): ?>
+        <span class="small"><?php print $submitted; ?></span>
+      <?php endif; ?>
+      
+      </div>
+  </div>
+
+
+<?php else: ?>
+
+
+<div class="col-xs-12 col-md-12">
+    <a href="#" class="thumbnail">
+      <img src="http://img.youtube.com/vi/<?PHP echo $node->field_video['und'][0]['value']; ?>/0.jpg" alt="...">
+    </a>
+      <div class="caption">
+            <?php print render($title_prefix); ?>
+            <?php if (!$page): ?>
+            <h2<?php print $title_attributes; ?>><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
+            <?php endif; ?>
+            <?php print render($title_suffix); ?>
+
+              <span class="small">
+                <?php print $user_picture; ?>
+                <?php if ($display_submitted): ?>
+                <span class="submitted"><?php print $submitted; ?></span>
+                <?php endif; ?>
+              </span>
+            
+      </div>
+  </div>
+
+
+
+
+
+  
+  
+
+
+
+
+<?php endif; ?>
